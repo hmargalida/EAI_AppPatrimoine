@@ -5,13 +5,13 @@
  */
 package appPatrimoine.business;
 
-import appPatrimoine.entities.Salle.Statut;
-import appPatrimoine.exception.FormationInexistanteException;
-import appPatrimoine.exception.FormationNotFoundException;
-import appPatrimoine.exception.SalleNonEquipeesOuDispoException;
+import appPatrimoine.entities.Salle;
 import appPatrimoine.exception.SalleNotFoundException;
-import appPatrimoine.exception.SessionNotFoundException;
-import java.util.Date;
+import appPatrimoine.exception.NumeroSemaineIncorrect;
+import appPatrimoine.exception.MauvaisStatutPrecedentException;
+import appPatrimoine.export.DisponibilitesExport;
+import appPatrimoine.export.SalleExport;
+import java.util.List;
 import javax.ejb.Local;
 
 /**
@@ -20,12 +20,50 @@ import javax.ejb.Local;
  */
 @Local
 public interface GestionPatrimoineLocal {
-    void libererSalle(Date date, int duree);
+       
+    /**
+     * Création d'une salle si elle n'existe pas en base
+     * @param idSalle identifiant à une salle
+     * @return void 
+     */
+    Salle creerSalleSiInnexistante(long idSalle);
     
-    boolean getSallesDispos(long idFormation, Date date) throws FormationInexistanteException;
+    /**
+     * Ajouter une liste d'équipements à une salle
+     * @param idSalle identifiant d'une salle
+     * @param equipements liste d'Equipements
+     * @return 
+     * @throws fr.miage.tlse.apprh.exception.SalleNotFoundException
+     */    
+    Salle ajouterEquipementsALaSalle(long idSalle, String equipements) throws SalleNotFoundException;
     
-    void majStatutSalle(Statut statut, Date date);
+    /**
+     * Edition de la liste des salles disponibles
+     * A partir de la liste de salles équipées fourni par AppTechniCom via le JMS
+     * @return Map<Integer, List>
+     */
+    List<DisponibilitesExport> editerListeSallesDispos();
     
-    void affecterSalle(long codeFormation, long codeSession, long codeSalle, Date date) throws SalleNonEquipeesOuDispoException, SalleNotFoundException, SessionNotFoundException, FormationNotFoundException;
+    /**
+     * Affecter une salle à une session
+     * @return 
+     * @throws fr.miage.tlse.apprh.exception.SalleNotFoundException
+     * @throws fr.miage.tlse.apprh.exception.NumeroSemaineIncorrect
+     * @throws fr.miage.tlse.apprh.exception.MauvaisStatutPrecedentException
+     */
+    SalleExport affecterSalle() throws SalleNotFoundException, NumeroSemaineIncorrect, MauvaisStatutPrecedentException;
+    
+    /**
+     * Mettre à jour le statut d'une salle
+     * @param idSalle
+     * @param statut nouveau statut de la salle
+     * @param numSem
+     * @return 
+     * @throws fr.miage.tlse.apprh.exception.SalleNotFoundException
+     * @throws fr.miage.tlse.apprh.exception.NumeroSemaineIncorrect
+     */
+    Salle majStatutSalle(long idSalle, String statut, int numSem) throws SalleNotFoundException, NumeroSemaineIncorrect, MauvaisStatutPrecedentException;
+    
+    String transmettreListeSalles();
     
 }

@@ -9,12 +9,12 @@ package appPatrimoine.exception;
  *
  * @author Sylvia
  */
-public class SalleNotFoundException extends Exception {
-    public SalleNotFoundException() {
+public class MauvaisStatutPrecedentException extends Exception {
+    public MauvaisStatutPrecedentException() {
         
     }
     
-    public SalleNotFoundException(String msg) {
+    public MauvaisStatutPrecedentException(String msg) {
         super(msg);
     }
 }

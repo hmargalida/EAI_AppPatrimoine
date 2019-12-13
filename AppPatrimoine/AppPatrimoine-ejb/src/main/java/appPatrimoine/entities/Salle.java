@@ -5,14 +5,22 @@
  */
 package appPatrimoine.entities;
 
+import appPatrimoine.enumerations.Equipement;
+import appPatrimoine.enumerations.StatutSalle;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -26,61 +34,49 @@ public class Salle implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long idSalle;
 
+    @ElementCollection
+    @OneToMany
+    List<Equipement> listeEquipements;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "salle")
+    List<DisponibiliteSalle> disponibiliteSalle;
+
+    /**
+     * Constructeur sans paramètre
+     */
+    protected Salle() {
+    }
+
+    /**
+     * Constructeur d'un objet Salle
+     *
+     * @param idSalle identifiant de la salle
+     */
+    public Salle(long idSalle) {
+        this.idSalle = idSalle;
+        this.listeEquipements = new ArrayList<>();
+        this.disponibiliteSalle = new ArrayList<>();
+    }
+
     public Long getIdSalle() {
         return idSalle;
     }
-    
-    /**
-     * L'énumération contenant les équipements d'une salle.
-     */
-    public enum Equipement{
-        
-    }
-    public Equipement equipement;
-    
-    /**
-     * Liste des équipements nécessaires dans la salle pour la formation.
-     */
-    private List<Equipement> equipementsNecessaires;
-    
-    public enum Statut{
-        INDISPONIBLE,AFFECTEE,PRESSENTIE
-    }
-    public Statut statut;
-
-    public Equipement getEquipement() {
-        return equipement;
-    }
 
     public List<Equipement> getEquipementsNecessaires() {
-        return equipementsNecessaires;
-    }
-
-    public void setEquipement(Equipement equipement) {
-        this.equipement = equipement;
+        return listeEquipements;
     }
 
     public void setEquipementsNecessaires(List<Equipement> equipementsNecessaires) {
-        this.equipementsNecessaires = equipementsNecessaires;
+        this.listeEquipements = equipementsNecessaires;
     }
 
-    public void setStatut(Statut statut) {
-        this.statut = statut;
+    public List<DisponibiliteSalle> getDisponibiliteSalle() {
+        return disponibiliteSalle;
     }
 
-    public void setPlanningSalle(Map<Date, Statut> planningSalle) {
-        this.planningSalle = planningSalle;
+    public void setDisponibiliteSalle(List<DisponibiliteSalle> disponibiliteSalle) {
+        this.disponibiliteSalle = disponibiliteSalle;
     }
-
-    public Statut getStatut() {
-        return statut;
-    }
-
-    public Map<Date, Statut> getPlanningSalle() {
-        return planningSalle;
-    }
-    
-    private Map<Date,Statut> planningSalle;
 
     public void setIdSalle(Long idSalle) {
         this.idSalle = idSalle;
@@ -94,21 +90,50 @@ public class Salle implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Salle)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        Salle other = (Salle) object;
-        if ((this.idSalle == null && other.idSalle != null) || (this.idSalle != null && !this.idSalle.equals(other.idSalle))) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        return true;
+        final Salle other = (Salle) obj;
+        return Objects.equals(this.idSalle, other.idSalle);
+    }
+    
+    public boolean possedeEquipement(Equipement e) {
+        return this.listeEquipements.contains(e);
+    }
+    
+    public void addEquipement(Equipement e) {
+        this.listeEquipements.add(e);
+    }
+    
+    public void addDisponibilite(DisponibiliteSalle dispo) {
+        this.disponibiliteSalle.add(dispo);
+    }
+    
+    public List<Integer> getDisponibilitesDeLaSalle() {
+        List<Integer> listDisponibiliteSalle = new ArrayList<>();
+        for(DisponibiliteSalle dispo : this.disponibiliteSalle) {
+            if(dispo.getStatutSalle().equals(StatutSalle.DISPONIBLE)) {
+                listDisponibiliteSalle.add(dispo.getNumSemaine());
+            }
+        }
+        return listDisponibiliteSalle;
+    }
+    
+    public boolean isAnneeBisextile() {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        return ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0));
     }
 
     @Override
     public String toString() {
         return "appPatrimoine.entities.Salle[ idSalle=" + idSalle + " ]";
     }
-    
+
 }

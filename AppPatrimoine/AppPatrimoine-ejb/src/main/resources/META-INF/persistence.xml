@@ -2,6 +2,8 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="AppPatrimoinePersistenceUnit" transaction-type="JTA">
     <jta-data-source>java:app/jdbc/patrimoineDataSource</jta-data-source>
+    <class>appPatrimoine.entities.DisponibiliteSalle</class>
+    <class>appPatrimoine.export.SalleExport</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>

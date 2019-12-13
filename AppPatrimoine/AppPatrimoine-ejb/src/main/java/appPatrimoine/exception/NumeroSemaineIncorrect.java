@@ -9,12 +9,12 @@ package appPatrimoine.exception;
  *
  * @author Sylvia
  */
-public class SalleNotFoundException extends Exception {
-    public SalleNotFoundException() {
+public class NumeroSemaineIncorrect extends Exception {
+    public NumeroSemaineIncorrect() {
         
     }
     
-    public SalleNotFoundException(String msg) {
+    public NumeroSemaineIncorrect(String msg) {
         super(msg);
     }
 }
